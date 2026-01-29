@@ -24,85 +24,94 @@
       display: block;
     }
 
-    /* Vertical slider overlay (inside the image) */
-    #vSliderWrap {
-      position: absolute;
-      left: 18px;         /* move left/right within the black margin */
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+    /* Panel that matches the slider's visual height */
+#vSliderWrap{
+  position:absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
 
-      /* subtle “panel” so it stays visible on dark backgrounds */
-      background: rgba(0,0,0,0.35);
-      padding: 10px 10px;
-      border-radius: 12px;
-      backdrop-filter: blur(2px);
-    }
+  width: 84px;        /* panel width */
+  height: 520px;      /* panel height ~ slider length + labels */
+  background: rgba(0,0,0,0.35);
+  border-radius: 18px;
+  backdrop-filter: blur(2px);
 
-    /* Superior/Inferior labels */
-    .vLabel {
-      color: white;
-      font-size: 13px;
-      line-height: 1;
-      user-select: none;
-      opacity: 0.95;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    /* Make the range vertical by rotating it */
-    #slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 480px;          /* becomes height after rotation */
-      height: 28px;
-      transform: rotate(-90deg);
-      cursor: pointer;
-      background: transparent;
-    }
+/* The rotated slider is centered in the panel */
+#slider{
+  -webkit-appearance:none;
+  appearance:none;
 
-    /* Track (Chrome/Safari) */
-    #slider::-webkit-slider-runnable-track {
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.55);
-    }
+  width: 480px;        /* length of slider */
+  height: 34px;        /* easier to grab */
+  transform: rotate(-90deg);
 
-    /* Thumb (Chrome/Safari) */
-    #slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: white;
-      margin-top: -6px; /* centers thumb on track */
-    }
+  background: transparent;
+  cursor: pointer;
+}
 
-    /* Track (Firefox) */
-    #slider::-moz-range-track {
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.55);
-    }
+/* Track (Chrome/Safari) */
+#slider::-webkit-slider-runnable-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+}
 
-    /* Thumb (Firefox) */
-    #slider::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: white;
-      border: none;
-    }
+/* Thumb (Chrome/Safari) */
+#slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  margin-top: -7px;
+}
 
-    /* Optional: small slice counter inside the panel */
-    #sliceLabel {
-      color: white;
-      font-size: 12px;
-      opacity: 0.9;
-      user-select: none;
-    }
+/* Firefox track/thumb */
+#slider::-moz-range-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+}
+#slider::-moz-range-thumb{
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: none;
+}
+
+/* Labels anchored to the top/bottom of the SAME panel */
+.vLabel{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  user-select: none;
+  opacity: 0.95;
+  white-space: nowrap;
+}
+
+#lblTop{ top: 14px; }       /* top label */
+#lblBottom{ bottom: 14px; } /* bottom label */
+
+/* Slice counter centered */
+#sliceLabel{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  opacity: 0.9;
+  user-select: none;
+}
   </style>
 </head>
 <body>
@@ -111,14 +120,14 @@
       <img id="sliceImg" alt="slice" />
 
       <!-- Vertical slider INSIDE the image -->
-      <div id="vSliderWrap">
-        <div class="vLabel">Inferior</div>
-        <input id="slider" type="range" min="1" max="27" value="1" />
-        <div class="vLabel">Superior</div>
-        <div id="sliceLabel"></div>
-      </div>
-    </div>
-  </div>
+     <div id="vSliderWrap">
+  <div class="vLabel" id="lblTop">Inferior</div>
+
+  <input id="slider" type="range" min="1" max="27" value="1" />
+
+  <div class="vLabel" id="lblBottom">Superior</div>
+  <div id="sliceLabel"></div>
+</div>
   
 
   <script src="app-1.js"></script>
