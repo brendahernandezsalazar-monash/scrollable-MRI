@@ -3,13 +3,15 @@ const slider = document.getElementById("slider");
 const sliceLabel = document.getElementById("sliceLabel");
 
 const NUM_SLICES = 27;
-const BASE = "assets/slices/";   // folder
-const EXT = ".png";              // file type
+const EXT = ".png";
+
+// ✅ This makes the path work whether you're on / or /repo-name/
+const BASE_URL = new URL("assets/slices/", document.baseURI).toString();
 
 slider.max = String(NUM_SLICES);
 
 function srcFor(i) {
-  return `${BASE}${i}${EXT}`;    // 1.png, 2.png, ..., 27.png
+  return `${BASE_URL}${i}${EXT}`;   // .../assets/slices/1.png
 }
 
 function preload(i) {
@@ -19,10 +21,10 @@ function preload(i) {
 }
 
 function setSlice(i) {
-  img.src = srcFor(i);
-  sliceLabel.textContent = `${i} / ${NUM_SLICES}`;
+  const url = srcFor(i);
+  img.src = url;
+  if (sliceLabel) sliceLabel.textContent = `${i} / ${NUM_SLICES}`;
 
-  // smoother scrolling
   preload(i + 1);
   preload(i - 1);
 }
@@ -30,7 +32,7 @@ function setSlice(i) {
 // Slider
 slider.addEventListener("input", () => setSlice(Number(slider.value)));
 
-// Mouse wheel scroll (over the image)
+// Mouse wheel
 img.addEventListener("wheel", (e) => {
   e.preventDefault();
   const delta = Math.sign(e.deltaY);
@@ -40,7 +42,7 @@ img.addEventListener("wheel", (e) => {
   setSlice(v);
 }, { passive: false });
 
-// Keyboard scroll
+// Keyboard
 window.addEventListener("keydown", (e) => {
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   let v = Number(slider.value) + (e.key === "ArrowRight" ? 1 : -1);
