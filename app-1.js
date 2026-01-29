@@ -1,29 +1,32 @@
-// app.js
 const img = document.getElementById("sliceImg");
 const slider = document.getElementById("slider");
 const label = document.getElementById("label");
 
-// 1) Set these to match your files
-const NUM_SLICES = 60;
-const PAD = 3; // slice_001.jpg
-const BASE = "assets/slices/slice_";
+const NUM_SLICES = 27;
+const BASE = "assets/slices/";   // folder
+const EXT = ".png";              // file type
 
 slider.max = String(NUM_SLICES);
 
 function srcFor(i) {
-  const n = String(i).padStart(PAD, "0");
-  return `${BASE}${n}.jpg`;
+  return `${BASE}${i}${EXT}`;    // 1.png, 2.png, ..., 27.png
+}
+
+function preload(i) {
+  if (i < 1 || i > NUM_SLICES) return;
+  const im = new Image();
+  im.src = srcFor(i);
 }
 
 function setSlice(i) {
   img.src = srcFor(i);
   label.textContent = `Slice ${i} / ${NUM_SLICES}`;
+  preload(i + 1);
+  preload(i - 1);
 }
 
-// Slider
 slider.addEventListener("input", () => setSlice(Number(slider.value)));
 
-// Mouse wheel scroll
 img.addEventListener("wheel", (e) => {
   e.preventDefault();
   const delta = Math.sign(e.deltaY);
@@ -33,7 +36,6 @@ img.addEventListener("wheel", (e) => {
   setSlice(v);
 }, { passive: false });
 
-// Keyboard scroll
 window.addEventListener("keydown", (e) => {
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   let v = Number(slider.value) + (e.key === "ArrowRight" ? 1 : -1);
