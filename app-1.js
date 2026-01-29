@@ -1,6 +1,6 @@
 const img = document.getElementById("sliceImg");
 const slider = document.getElementById("slider");
-const label = document.getElementById("label");
+const sliceLabel = document.getElementById("sliceLabel");
 
 const NUM_SLICES = 27;
 const BASE = "assets/slices/";   // folder
@@ -20,13 +20,17 @@ function preload(i) {
 
 function setSlice(i) {
   img.src = srcFor(i);
-  label.textContent = `Slice ${i} / ${NUM_SLICES}`;
+  sliceLabel.textContent = `${i} / ${NUM_SLICES}`;
+
+  // smoother scrolling
   preload(i + 1);
   preload(i - 1);
 }
 
+// Slider
 slider.addEventListener("input", () => setSlice(Number(slider.value)));
 
+// Mouse wheel scroll (over the image)
 img.addEventListener("wheel", (e) => {
   e.preventDefault();
   const delta = Math.sign(e.deltaY);
@@ -36,6 +40,7 @@ img.addEventListener("wheel", (e) => {
   setSlice(v);
 }, { passive: false });
 
+// Keyboard scroll
 window.addEventListener("keydown", (e) => {
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   let v = Number(slider.value) + (e.key === "ArrowRight" ? 1 : -1);
