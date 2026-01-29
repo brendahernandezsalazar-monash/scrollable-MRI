@@ -1,0 +1,45 @@
+<!-- lat-vent.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CT/MRI Stack Viewer</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; }
+    #viewer { max-width: 820px; }
+    #imgWrap { position: relative; display: inline-block; }
+    #sliceImg { width: 100%; height: auto; display: block; }
+    /* Optional overlay container (for numbered markers) */
+    #overlay { position:absolute; inset:0; pointer-events:none; }
+    .marker {
+      position:absolute; transform: translate(-50%,-50%);
+      background: rgba(0,0,0,0.65); color: white;
+      border-radius: 999px; width: 26px; height: 26px;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Axial Stack</h2>
+
+  <div id="viewer">
+    <div id="imgWrap">
+      <img id="sliceImg" alt="slice">
+      <div id="overlay"></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <input id="slider" type="range" min="1" max="60" value="1" />
+      <span id="label"></span>
+    </div>
+
+    <p style="margin-top:10px; color:#444;">
+      Tip: use the slider, mouse wheel, or ←/→ keys to scroll.
+    </p>
+  </div>
+
+  <script src="app-1.js"></script>
+</body>
+</html>
