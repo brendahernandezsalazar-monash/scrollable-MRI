@@ -27,7 +27,7 @@
     /* Vertical slider overlay (inside the image) */
     #vSliderWrap {
       position: absolute;
-      right: 18px;         /* move left/right within the black margin */
+      left: 18px;         /* move left/right within the black margin */
       top: 50%;
       transform: translateY(-50%);
       display: flex;
@@ -55,7 +55,7 @@
     #slider {
       -webkit-appearance: none;
       appearance: none;
-      width: 220px;          /* becomes height after rotation */
+      width: 480px;          /* becomes height after rotation */
       height: 28px;
       transform: rotate(-90deg);
       cursor: pointer;
@@ -112,9 +112,9 @@
 
       <!-- Vertical slider INSIDE the image -->
       <div id="vSliderWrap">
-        <div class="vLabel">Superior</div>
-        <input id="slider" type="range" min="1" max="27" value="1" />
         <div class="vLabel">Inferior</div>
+        <input id="slider" type="range" min="1" max="27" value="1" />
+        <div class="vLabel">Superior</div>
         <div id="sliceLabel"></div>
       </div>
     </div>
