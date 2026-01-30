@@ -24,32 +24,48 @@
       display: block;
     }
 
-    /* Panel that matches the slider's visual height */
+    /* Overlay panel */
 #vSliderWrap{
   position:absolute;
   left: 18px;
   top: 50%;
   transform: translateY(-50%);
 
-  width: 84px;        /* panel width */
-  height: 520px;      /* panel height ~ slider length + labels */
+  /* Make the panel match the slider height */
+  height: 520px;          /* 480 slider + room for labels */
+  width: 110px;           /* enough space for slider + counter */
+
   background: rgba(0,0,0,0.35);
   border-radius: 18px;
   backdrop-filter: blur(2px);
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+
+  padding: 14px 10px;
+  box-sizing: border-box;
 }
 
-/* The rotated slider is centered in the panel */
+/* Row that holds slider + counter */
+#sliderRow{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Vertical slider (rotated) */
 #slider{
   -webkit-appearance:none;
   appearance:none;
 
-  width: 480px;        /* length of slider */
-  height: 34px;        /* easier to grab */
+  width: 480px;           /* becomes the vertical height */
+  height: 36px;           /* easier to grab */
+
   transform: rotate(-90deg);
+  transform-origin: center;
 
   background: transparent;
   cursor: pointer;
@@ -86,11 +102,8 @@
   border: none;
 }
 
-/* Labels anchored to the top/bottom of the SAME panel */
+/* Labels */
 .vLabel{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   color: white;
   font-size: 14px;
   user-select: none;
@@ -98,20 +111,21 @@
   white-space: nowrap;
 }
 
-#lblTop{ top: 14px; }       /* top label */
-#lblBottom{ bottom: 14px; } /* bottom label */
-
-/* Slice counter centered */
+/* Slice counter: to the RIGHT of the slider, rotated */
 #sliceLabel{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   color: white;
   font-size: 12px;
   opacity: 0.9;
   user-select: none;
+  white-space: nowrap;
 }
+
+/* Rotate text 90° to the LEFT */
+.vRot{
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
   </style>
 </head>
 <body>
@@ -120,13 +134,15 @@
       <img id="sliceImg" alt="slice" />
 
       <!-- Vertical slider INSIDE the image -->
-     <div id="vSliderWrap">
-  <div class="vLabel" id="lblTop">Inferior</div>
+    <div id="vSliderWrap">
+  <div class="vLabel vRot" id="lblTop">Inferior</div>
 
-  <input id="slider" type="range" min="1" max="27" value="1" />
+  <div id="sliderRow">
+    <input id="slider" type="range" min="1" max="27" value="1" />
+    <div id="sliceLabel" class="vRot"></div>
+  </div>
 
-  <div class="vLabel" id="lblBottom">Superior</div>
-  <div id="sliceLabel"></div>
+  <div class="vLabel vRot" id="lblBottom">Superior</div>
 </div>
   
 
