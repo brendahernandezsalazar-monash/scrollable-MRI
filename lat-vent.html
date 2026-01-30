@@ -11,141 +11,144 @@
     /* Viewer container */
     #viewer { max-width: 980px; }
 
-    /* Image wrapper so we can overlay UI inside it */
-    #imgWrap{
-      position: relative;
-      display: inline-block;
-      width: 100%;
-      background: #000; /* looks nicer while loading */
+   /* Image wrapper (must be the positioning reference) */
+#imgWrap{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  background: #000;
+  --ui-scale: clamp(0.6, 0.9vw, 1);
+}
 
-      /* Responsive scaling factor for overlay */
-      --ui-scale: clamp(0.55, 0.9vw, 1);
-    }
+#sliceImg{
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-    #sliceImg{
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+/* Overlay panel */
+#vSliderWrap{
+  position: absolute;
+  left: calc(18px * var(--ui-scale));
+  top: 50%;
+  transform: translateY(-50%) scale(var(--ui-scale));
+  transform-origin: left center;
 
-    /* Overlay panel */
-    #vSliderWrap{
-      position:absolute;
-      left: calc(18px * var(--ui-scale));
-      top: 50%;
-      transform: translateY(-50%) scale(var(--ui-scale));
-      transform-origin: left center;
+  /* ✅ never taller than the image */
+  height: min(520px, calc(100% - 24px));
+  width: 110px;
 
-      height: 520px;
-      width: 110px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 18px;
+  backdrop-filter: blur(2px);
 
-      background: rgba(0,0,0,0.35);
-      border-radius: 18px;
-      backdrop-filter: blur(2px);
+  box-sizing: border-box;
+  pointer-events: none;
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
+  /* for absolute label positioning */
+  z-index: 5;
+}
 
-      padding: 14px 10px;
-      box-sizing: border-box;
+/* Put labels where you want them (not in the flex flow) */
+#lblTop, #lblBottom{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 14px;
+  opacity: 0.95;
+  user-select: none;
+  white-space: nowrap;
+  pointer-events: none;
+}
 
-      pointer-events: none; /* panel doesn't block image */
-    }
+#lblTop{ top: 12px; }
+#lblBottom{ bottom: 12px; }
 
-    /* Row that holds slider + counter (make this interactive) */
-    #sliderRow{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      pointer-events: auto; /* slider works */
-    }
+/* Slider row sits in the center region between labels */
+#sliderRow{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 
-    /* Vertical slider (rotated) */
-    #slider{
-      -webkit-appearance:none;
-      appearance:none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-      width: 480px;  /* becomes the vertical height */
-      height: 36px;
+  pointer-events: auto; /* ✅ slider works */
+}
 
-      transform: rotate(-90deg);
-      transform-origin: center;
+/* Vertical slider */
+#slider{
+  -webkit-appearance: none;
+  appearance: none;
 
-      background: transparent;
-      cursor: pointer;
-    }
+  /* ✅ slider length adapts to panel height */
+  width: min(480px, calc(min(520px, calc(100% - 24px)) - 90px));
+  height: 36px;
 
-    /* Track (Chrome/Safari) */
-    #slider::-webkit-slider-runnable-track{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.55);
-    }
+  transform: rotate(-90deg);
+  transform-origin: center;
 
-    /* Thumb (Chrome/Safari) */
-    #slider::-webkit-slider-thumb{
-      -webkit-appearance:none;
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: #fff;
-      margin-top: -7px;
-    }
+  background: transparent;
+  cursor: pointer;
+}
 
-    /* Firefox track/thumb */
-    #slider::-moz-range-track{
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.55);
-    }
-    #slider::-moz-range-thumb{
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: #fff;
-      border: none;
-    }
+/* Track + thumb (same as before) */
+#slider::-webkit-slider-runnable-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+}
+#slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  margin-top: -7px;
+}
+#slider::-moz-range-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+}
+#slider::-moz-range-thumb{
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: none;
+}
 
-    /* Labels */
-    .vLabel{
-      color: white;
-      font-size: 14px;
-      user-select: none;
-      opacity: 0.95;
-      white-space: nowrap;
-    }
+#sliceLabel{
+  color: white;
+  font-size: 12px;
+  opacity: 0.9;
+  user-select: none;
+  white-space: nowrap;
+  pointer-events: none;
+}
 
-    /* Slice counter */
-    #sliceLabel{
-      color: white;
-      font-size: 12px;
-      opacity: 0.9;
-      user-select: none;
-      white-space: nowrap;
-    }
   </style>
 </head>
 
 <body>
-  <div id="viewer">
-    <div id="imgWrap">
-      <img id="sliceImg" alt="slice" />
+  <div id="imgWrap">
+  <img id="sliceImg" alt="slice" />
 
-      <div id="vSliderWrap">
-        <div class="vLabel" id="lblTop">Inferior</div>
+  <div id="vSliderWrap">
+    <div class="vLabel" id="lblTop">Inferior</div>
 
-        <div id="sliderRow">
-          <input id="slider" type="range" min="1" max="27" value="1" />
-          <div id="sliceLabel"></div>
-        </div>
-
-        <div class="vLabel" id="lblBottom">Superior</div>
-      </div>
+    <div id="sliderRow">
+      <input id="slider" type="range" min="1" max="27" value="1" />
+      <div id="sliceLabel"></div>
     </div>
+
+    <div class="vLabel" id="lblBottom">Superior</div>
   </div>
+</div>
 
   <script src="app-1.js"></script>
 </body>
