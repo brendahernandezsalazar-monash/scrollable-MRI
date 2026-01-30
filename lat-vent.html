@@ -3,152 +3,151 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MRI Ventricle</title>
+  <title>MRI Viewer</title>
 
   <style>
     body { font-family: system-ui, sans-serif; margin: 24px; }
 
-    /* Viewer container */
-    #viewer { max-width: 980px; }
+    /* Center the viewer on the page */
+    #viewer {
+      max-width: 980px;
+      margin: 0 auto;
+    }
 
-   /* Image wrapper (must be the positioning reference) */
-#imgWrap{
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  background: #000;
-  --ui-scale: clamp(0.6, 0.9vw, 1);
-}
+    /* 🔥 Key: wrapper shrink-wraps to the image */
+    #imgWrap{
+      position: relative;
+      display: inline-block;   /* shrink-wrap */
+      background: #000;
+      line-height: 0;          /* remove inline-block baseline gap */
+    }
 
-#sliceImg{
-  width: 100%;
-  height: auto;
-  display: block;
-}
+    /* Image scales down on small screens */
+    #sliceImg{
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
 
-/* Overlay panel */
-#vSliderWrap{
-  position: absolute;
-  left: calc(18px * var(--ui-scale));
-  top: 50%;
-  transform: translateY(-50%) scale(var(--ui-scale));
-  transform-origin: left center;
+    /* Overlay panel (we’ll set its height in JS) */
+    #vSliderWrap{
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 120px;
 
-  /* ✅ never taller than the image */
-  height: min(520px, calc(100% - 24px));
-  width: 110px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      backdrop-filter: blur(2px);
 
-  background: rgba(0,0,0,0.35);
-  border-radius: 18px;
-  backdrop-filter: blur(2px);
+      box-sizing: border-box;
+      padding: 12px 10px;
 
-  box-sizing: border-box;
-  pointer-events: none;
+      z-index: 5;
+      pointer-events: none; /* panel doesn’t block clicks */
+    }
 
-  /* for absolute label positioning */
-  z-index: 5;
-}
+    /* Labels */
+    .vLabel{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 14px;
+      opacity: 0.95;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    #lblTop{ top: 10px; }
+    #lblBottom{ bottom: 10px; }
 
-/* Put labels where you want them (not in the flex flow) */
-#lblTop, #lblBottom{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #fff;
-  font-size: 14px;
-  opacity: 0.95;
-  user-select: none;
-  white-space: nowrap;
-  pointer-events: none;
-}
+    /* Slider row centered */
+    #sliderRow{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto; /* ✅ allow slider interaction */
+    }
 
-#lblTop{ top: 12px; }
-#lblBottom{ bottom: 12px; }
+    /* Vertical slider */
+    #slider{
+      -webkit-appearance: none;
+      appearance: none;
 
-/* Slider row sits in the center region between labels */
-#sliderRow{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+      /* length is set in JS based on panel height */
+      width: 420px;   /* fallback */
+      height: 36px;
 
-  display: flex;
-  align-items: center;
-  gap: 10px;
+      transform: rotate(-90deg);
+      transform-origin: center;
 
-  pointer-events: auto; /* ✅ slider works */
-}
+      background: transparent;
+      cursor: pointer;
+    }
 
-/* Vertical slider */
-#slider{
-  -webkit-appearance: none;
-  appearance: none;
+    /* Track + thumb */
+    #slider::-webkit-slider-runnable-track{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
+    #slider::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      margin-top: -7px;
+    }
+    #slider::-moz-range-track{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
+    #slider::-moz-range-thumb{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      border: none;
+    }
 
-  /* ✅ slider length adapts to panel height */
-  width: min(480px, calc(min(520px, calc(100% - 24px)) - 90px));
-  height: 36px;
-
-  transform: rotate(-90deg);
-  transform-origin: center;
-
-  background: transparent;
-  cursor: pointer;
-}
-
-/* Track + thumb (same as before) */
-#slider::-webkit-slider-runnable-track{
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.55);
-}
-#slider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #fff;
-  margin-top: -7px;
-}
-#slider::-moz-range-track{
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.55);
-}
-#slider::-moz-range-thumb{
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #fff;
-  border: none;
-}
-
-#sliceLabel{
-  color: white;
-  font-size: 12px;
-  opacity: 0.9;
-  user-select: none;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
+    /* Slice counter */
+    #sliceLabel{
+      color: #fff;
+      font-size: 12px;
+      opacity: 0.9;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
   </style>
 </head>
 
 <body>
-  <div id="imgWrap">
-  <img id="sliceImg" alt="slice" />
+  <div id="viewer">
+    <div id="imgWrap">
+      <img id="sliceImg" alt="slice" />
 
-  <div id="vSliderWrap">
-    <div class="vLabel" id="lblTop">Inferior</div>
+      <div id="vSliderWrap">
+        <div class="vLabel" id="lblTop">Inferior</div>
 
-    <div id="sliderRow">
-      <input id="slider" type="range" min="1" max="27" value="1" />
-      <div id="sliceLabel"></div>
+        <div id="sliderRow">
+          <input id="slider" type="range" min="1" max="27" value="1" />
+          <div id="sliceLabel"></div>
+        </div>
+
+        <div class="vLabel" id="lblBottom">Superior</div>
+      </div>
     </div>
-
-    <div class="vLabel" id="lblBottom">Superior</div>
   </div>
-</div>
 
   <script src="app-1.js"></script>
 </body>
