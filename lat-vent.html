@@ -120,31 +120,19 @@
   white-space: nowrap;
 }
 
-/* Rotate text 90° to the LEFT */
-.vRot{
-  transform: rotate(-90deg);
-  transform-origin: center;
-}
-
   </style>
 </head>
 <body>
-  <div id="viewer">
-    <div id="imgWrap">
-      <img id="sliceImg" alt="slice" />
-
-      <!-- Vertical slider INSIDE the image -->
-    <div id="vSliderWrap">
-  <div class="vLabel vRot" id="lblTop">Inferior</div>
+<div id="vSliderWrap">
+  <div class="vLabel" id="lblTop">Inferior</div>
 
   <div id="sliderRow">
     <input id="slider" type="range" min="1" max="27" value="1" />
-    <div id="sliceLabel" class="vRot"></div>
+    <div id="sliceLabel"></div>
   </div>
 
-  <div class="vLabel vRot" id="lblBottom">Superior</div>
+  <div class="vLabel" id="lblBottom">Superior</div>
 </div>
-  
 
   <script src="app-1.js"></script>
 </body>
