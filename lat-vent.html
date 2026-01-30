@@ -27,13 +27,13 @@
     /* Overlay panel */
 #vSliderWrap{
   position:absolute;
-  left: 18px;
+  left: calc(30px * var(--ui-scale));
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) scale(var(--ui-scale));
+  transform-origin: left center;
 
-  /* Make the panel match the slider height */
-  height: 520px;          /* 480 slider + room for labels */
-  width: 110px;           /* enough space for slider + counter */
+  height: 520px;
+  width: 110px;
 
   background: rgba(0,0,0,0.35);
   border-radius: 18px;
@@ -46,7 +46,10 @@
 
   padding: 14px 10px;
   box-sizing: border-box;
+
+  pointer-events: none;
 }
+
 
 /* Row that holds slider + counter */
 #sliderRow{
