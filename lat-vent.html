@@ -1,10 +1,10 @@
-<!-- lat-vent.html -->
 <!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MRI Ventricle</title>
+
   <style>
     body { font-family: system-ui, sans-serif; margin: 24px; }
 
@@ -12,130 +12,140 @@
     #viewer { max-width: 980px; }
 
     /* Image wrapper so we can overlay UI inside it */
-    #imgWrap {
+    #imgWrap{
       position: relative;
       display: inline-block;
       width: 100%;
+      background: #000; /* looks nicer while loading */
+
+      /* Responsive scaling factor for overlay */
+      --ui-scale: clamp(0.55, 0.9vw, 1);
     }
 
-    #sliceImg {
+    #sliceImg{
       width: 100%;
       height: auto;
       display: block;
     }
 
     /* Overlay panel */
-#vSliderWrap{
-  position:absolute;
-  left: calc(30px * var(--ui-scale));
-  top: 50%;
-  transform: translateY(-50%) scale(var(--ui-scale));
-  transform-origin: left center;
+    #vSliderWrap{
+      position:absolute;
+      left: calc(30px * var(--ui-scale));
+      top: 50%;
+      transform: translateY(-50%) scale(var(--ui-scale));
+      transform-origin: left center;
 
-  height: 520px;
-  width: 110px;
+      height: 520px;
+      width: 110px;
 
-  background: rgba(0,0,0,0.35);
-  border-radius: 18px;
-  backdrop-filter: blur(2px);
+      background: rgba(0,0,0,0.35);
+      border-radius: 18px;
+      backdrop-filter: blur(2px);
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
 
-  padding: 14px 10px;
-  box-sizing: border-box;
+      padding: 14px 10px;
+      box-sizing: border-box;
 
-  pointer-events: none;
-}
+      pointer-events: none; /* panel doesn't block image */
+    }
 
+    /* Row that holds slider + counter (make this interactive) */
+    #sliderRow{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      pointer-events: auto; /* slider works */
+    }
 
-/* Row that holds slider + counter */
-#sliderRow{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
+    /* Vertical slider (rotated) */
+    #slider{
+      -webkit-appearance:none;
+      appearance:none;
 
-/* Vertical slider (rotated) */
-#slider{
-  -webkit-appearance:none;
-  appearance:none;
+      width: 480px;  /* becomes the vertical height */
+      height: 36px;
 
-  width: 480px;           /* becomes the vertical height */
-  height: 36px;           /* easier to grab */
+      transform: rotate(-90deg);
+      transform-origin: center;
 
-  transform: rotate(-90deg);
-  transform-origin: center;
+      background: transparent;
+      cursor: pointer;
+    }
 
-  background: transparent;
-  cursor: pointer;
-}
+    /* Track (Chrome/Safari) */
+    #slider::-webkit-slider-runnable-track{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
 
-/* Track (Chrome/Safari) */
-#slider::-webkit-slider-runnable-track{
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.55);
-}
+    /* Thumb (Chrome/Safari) */
+    #slider::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      margin-top: -7px;
+    }
 
-/* Thumb (Chrome/Safari) */
-#slider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #fff;
-  margin-top: -7px;
-}
+    /* Firefox track/thumb */
+    #slider::-moz-range-track{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
+    #slider::-moz-range-thumb{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      border: none;
+    }
 
-/* Firefox track/thumb */
-#slider::-moz-range-track{
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.55);
-}
-#slider::-moz-range-thumb{
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #fff;
-  border: none;
-}
+    /* Labels */
+    .vLabel{
+      color: white;
+      font-size: 14px;
+      user-select: none;
+      opacity: 0.95;
+      white-space: nowrap;
+    }
 
-/* Labels */
-.vLabel{
-  color: white;
-  font-size: 14px;
-  user-select: none;
-  opacity: 0.95;
-  white-space: nowrap;
-}
-
-/* Slice counter: to the RIGHT of the slider, rotated */
-#sliceLabel{
-  color: white;
-  font-size: 12px;
-  opacity: 0.9;
-  user-select: none;
-  white-space: nowrap;
-}
-
+    /* Slice counter */
+    #sliceLabel{
+      color: white;
+      font-size: 12px;
+      opacity: 0.9;
+      user-select: none;
+      white-space: nowrap;
+    }
   </style>
 </head>
+
 <body>
-<div id="vSliderWrap">
-  <div class="vLabel" id="lblTop">Inferior</div>
+  <div id="viewer">
+    <div id="imgWrap">
+      <img id="sliceImg" alt="slice" />
 
-  <div id="sliderRow">
-    <input id="slider" type="range" min="1" max="27" value="1" />
-    <div id="sliceLabel"></div>
+      <div id="vSliderWrap">
+        <div class="vLabel" id="lblTop">Inferior</div>
+
+        <div id="sliderRow">
+          <input id="slider" type="range" min="1" max="27" value="1" />
+          <div id="sliceLabel"></div>
+        </div>
+
+        <div class="vLabel" id="lblBottom">Superior</div>
+      </div>
+    </div>
   </div>
-
-  <div class="vLabel" id="lblBottom">Superior</div>
-</div>
 
   <script src="app-1.js"></script>
 </body>
