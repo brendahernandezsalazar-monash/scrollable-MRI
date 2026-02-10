@@ -1,1 +1,155 @@
 
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MRI Viewer</title>
+
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; }
+
+    /* Center the viewer on the page */
+    #viewer {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    /* 🔥 Key: wrapper shrink-wraps to the image */
+    #imgWrap{
+      position: relative;
+      display: inline-block;   /* shrink-wrap */
+      background: #000;
+      line-height: 0;          /* remove inline-block baseline gap */
+    }
+
+    /* Image scales down on small screens */
+    #sliceImg{
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Overlay panel (we’ll set its height in JS) */
+    #vSliderWrap{
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 120px;
+
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      backdrop-filter: blur(2px);
+
+      box-sizing: border-box;
+      padding: 12px 10px;
+
+      z-index: 5;
+      pointer-events: none; /* panel doesn’t block clicks */
+    }
+
+    /* Labels */
+    .vLabel{
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 14px;
+      opacity: 0.95;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    #lblTop{ top: 10px; }
+    #lblBottom{ bottom: 10px; }
+
+    /* Slider row centered */
+    #sliderRow{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto; /* ✅ allow slider interaction */
+    }
+
+    /* Vertical slider */
+    #slider{
+      -webkit-appearance: none;
+      appearance: none;
+
+      /* length is set in JS based on panel height */
+      width: 420px;   /* fallback */
+      height: 36px;
+
+      transform: rotate(-90deg);
+      transform-origin: center;
+
+      background: transparent;
+      cursor: pointer;
+    }
+
+    /* Track + thumb */
+    #slider::-webkit-slider-runnable-track{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
+    #slider::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      margin-top: -7px;
+    }
+    #slider::-moz-range-track{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
+    #slider::-moz-range-thumb{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      border: none;
+    }
+
+    /* Slice counter */
+    #sliceLabel{
+      color: #fff;
+      font-size: 12px;
+      opacity: 0.9;
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewer">
+    <div id="imgWrap">
+      <img id="sliceImg" alt="slice" />
+
+      <div id="vSliderWrap">
+        <div class="vLabel" id="lblTop">Inferior</div>
+
+        <div id="sliderRow">
+          <input id="slider" type="range" min="1" max="27" value="1" />
+          <div id="sliceLabel"></div>
+        </div>
+
+        <div class="vLabel" id="lblBottom">Superior</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app-3.js"></script>
+</body>
+</html>
